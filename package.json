@@ -1,0 +1,25 @@
+{
+  "name": "bitcoin-brute-force",
+  "version": "1.0.0",
+  "description": "Bitcoin private key brute force tool with progress saving",
+  "main": "finder.js",
+  "scripts": {
+    "start": "node --no-warnings finder.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bitcoin",
+    "brute-force",
+    "crypto"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "bitcoinjs-lib": "^6.1.0",
+    "lodash": "^4.17.21",
+    "secp256k1": "^4.0.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
