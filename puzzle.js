@@ -1,11 +1,3 @@
-//import _ from 'lodash'
-//import secp256k1 from 'secp256k1'
-//import bitcoin from 'bitcoinjs-lib'
-//import cluster from 'cluster'
-//import fs from 'fs'
-
-
-
 // Disable warnings
 process.removeAllListeners('warning');
 
@@ -23,8 +15,13 @@ const addressFile = "target.txt";
 const progressFile = "progress.json";
 const random = false; // Set to false for sequential search
 const keySpace = "20000000000000000:3ffffffffffffffff";
-const FOUND_FILE = "found/found.txt";
+const FOUND_FILE = "found.txt";
 const formatter = new Intl.NumberFormat('en', { notation: 'compact' });
+
+// Create found directory if it doesn't exist
+if (!fs.existsSync('found')) {
+    fs.mkdirSync('found');
+}
 
 // Read addresses from file
 const targetAddresses = fs.readFileSync(addressFile, 'utf8')
@@ -97,6 +94,11 @@ function getRandomHexInRange(min, max) {
     return result.toString(16).padStart(64, '0');
 }
 
+function saveFoundKey(privateKey, address) {
+    const content = `Private Key: ${privateKey}\nAddress: ${address}\n\n`;
+    fs.appendFileSync(path.join('found', FOUND_FILE), content, 'utf8');
+}
+
 if (cluster.isMaster) {
     console.log(`Starting ${numOfWorkers} workers...`);
     for (let i = 0; i < numOfWorkers; i++) {
@@ -141,6 +143,9 @@ if (cluster.isMaster) {
             console.log('Time elapsed:', ((Date.now() - progress.startTime)/1000/60).toFixed(2), 'minutes');
             console.log('Total keys checked:', progress.totalKeys);
             
+            // Save found key
+            saveFoundKey(message.privateKey, message.address);
+            
             // Remove progress file on success
             try {
                 fs.unlinkSync(progressFile);
@@ -170,7 +175,6 @@ if (cluster.isMaster) {
                     privateKey,
                     address
                 });
-                fs.appendFileSync(FOUND_FILE,`PV:${privateKey}-${addres}`,"utf8");
                 break;
             }
             
@@ -192,7 +196,6 @@ if (cluster.isMaster) {
                     privateKey,
                     address
                 });
-                fs.appendFileSync(FOUND_FILE,`PV:${privateKey}-${addres}`,"utf8");
                 break;
             }
             
